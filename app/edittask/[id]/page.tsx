@@ -39,12 +39,10 @@ export default function EditTask() {
       if (!id) return;
       const docRef = doc(firebasedb, "task_tb", id);
       const docSnap = await getDoc(docRef);
-      if (!docSnap.exists()) {
-        console.error("Task not found");
-        return;
-      }
+      if (!docSnap.exists()) return;
       const data = docSnap.data() as Task;
-      setTask({ id: docSnap.id, ...data });
+      const { id: _, ...rest } = data;
+      setTask({ id: docSnap.id, ...rest });
       setTitle(data.title);
       setDetail(data.detail);
       setIsCompleted(data.is_completed);
@@ -80,7 +78,6 @@ export default function EditTask() {
           .remove([decodeURIComponent(oldFileName)]);
         if (deleteError) {
           alert("Error deleting old image");
-          console.error(deleteError.message);
           return;
         }
       }
@@ -91,7 +88,6 @@ export default function EditTask() {
         .upload(fileName, imageFile);
       if (uploadError) {
         alert("Error uploading image");
-        console.error(uploadError.message);
         return;
       }
       const { data: urlData } = supabase.storage
